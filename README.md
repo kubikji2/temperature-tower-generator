@@ -13,3 +13,11 @@ This step will be implemented in `source/floor.scad` file.
 - [ ] add stringing segment (two cones)
 - [ ] add curvature segment 
 
+### Openscad - Tower model
+
+This step will be implemented in `source/tower.scad` file.
+
+- [ ] replicate floors to form a tower
+- [ ] add baseplate using [Q++ OpenSCAD library](https://github.com/kubikji2/qpp-openscad-library)
+- [ ] add text for temperatures and material
+- [ ] make it easily interfacable as in [url-qr-stl](https://github.com/kubikji2/url-qr-stl)
