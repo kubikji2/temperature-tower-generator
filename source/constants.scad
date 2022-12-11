@@ -50,3 +50,7 @@ bp_w = 2*bp_cr + f_w;
 // '-> baseplate width
 bp_t = 1;
 // '-> baseplate thickness
+
+// TEXT perameters
+t_d = 0.5;
+// '-> text depth

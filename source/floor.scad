@@ -14,6 +14,7 @@ module __slope(ang=45, right=false)
     _c_x_off = right ? -ss_l : 0;
     // hole x offset
     _h_x_off = right ? ss_l - ss_off - ss_d/2 : ss_off + ss_d/2;
+    _t_x_off = right ? bs_b_t : ss_l-bs_b_t;
 
     difference()
     {
@@ -29,13 +30,31 @@ module __slope(ang=45, right=false)
         // hole
         translate([_h_x_off,f_w/2,0])
             cylinder(d=ss_d, h=f_h+qpp_eps);
+
+        
+        // degrees
+        rotate([90,0,0])
+            translate([_t_x_off,f_h-bs_b_t, -t_d+qpp_eps])
+                linear_extrude(t_d)
+                    text(text=str(ang, "°"), size=3, halign= right ? "left" : "right", valign="top");
     }
 }
 
-module __curves()
+module __curves(temp)
 {
-    // TODO
-    cube([cs_l, f_w, f_h]);
+    difference()
+    {
+        // main block
+        cube([cs_l, f_w, f_h]);
+        
+        // TODO curves
+
+        // temperature
+        rotate([90,0,0])
+            translate([cs_l/2,f_h/2, -t_d+qpp_eps])
+                linear_extrude(t_d)
+                    text(text=str(temp), size=6, halign="center", valign="center");
+    }
 }
 
 module __bridge()
@@ -58,10 +77,9 @@ module __bridge()
         cube([bs_b_l,bs_b_t,bs_b_h]);
 }
 
-module floor(temperature="")
+module floor(temperature="230")
 {
     _temp = str(temperature);
-
 
     _tf_1 = [bp_cr, bp_cr, 0];
     translate(_tf_1)
@@ -69,7 +87,7 @@ module floor(temperature="")
     
     _tf_2 = qpp_add_vec(_tf_1,[ss_l,0,0]);
     translate(_tf_2)
-        __curves();
+        __curves(temp=_temp);
     
     _tf_3 = qpp_add_vec(_tf_2,[cs_l,0,0]);
     translate(_tf_3)
