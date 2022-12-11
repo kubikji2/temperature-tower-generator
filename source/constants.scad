@@ -26,7 +26,7 @@ bs_b_t = 1.5;
 
 // CURVE segment parameters
 // '-> TODO
-cs_l = 0;
+cs_l = 15;
 // '-> curvature segment legth
 
 

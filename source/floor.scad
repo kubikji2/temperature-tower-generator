@@ -1,5 +1,6 @@
 include<constants.scad>
 include<qpp-openscad-library/qpp_constants.scad>
+include<qpp-openscad-library/qpp_utils.scad>
 
 $fn = 120;
 
@@ -31,12 +32,37 @@ module __slope(ang=45, right=false)
     }
 }
 
+module __curves()
+{
+    // TODO
+    cube([cs_l, f_w, f_h]);
+}
+
+module __bridge()
+{
+    
+}
+
 module floor(temperature="")
 {
     _temp = str(temperature);
 
 
-    __slope();
+    _tf_1 = [bp_cr, bp_cr, 0];
+    translate(_tf_1)
+        __slope(ang=35, right=false);
+    
+    _tf_2 = qpp_add_vec(_tf_1,[ss_l,0,0]);
+    translate(_tf_2)
+        __curves();
+    
+    _tf_3 = qpp_add_vec(_tf_2,[cs_l,0,0]);
+    translate(_tf_3)
+        __bridge();
+    
+    _tf_4 = qpp_add_vec(_tf_3,[bs_l,0,0]);
+    translate(_tf_4)
+        __slope(ang=45, right=true);
 
 }
 
