@@ -8,9 +8,9 @@ Utility for creating customizable temperature towers for filament temperature ca
 
 This step will be implemented in `source/floor.scad` file.
 
-- [ ] model basic slopes at two different angles with holes
-- [ ] add bridging segment
-- [ ] add stringing segment (two cones)
+- [x] model basic slopes at two different angles with holes
+- [x] add bridging segment
+- [x] add stringing segment (two cones)
 - [ ] add curvature segment 
 
 ### Openscad - Tower model
