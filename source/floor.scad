@@ -40,7 +40,22 @@ module __curves()
 
 module __bridge()
 {
+    // bridge
+    translate([0,0,f_h-bs_b_t])
+        cube([bs_l, f_w, bs_b_t]); 
     
+    // bigger cylinder
+    _tf_c = [0, f_w/2, 0];
+    translate(qpp_add_vec(_tf_c, [bs_c_off,0,0]))
+        cylinder(d1=bs_c_D, d2=0, h=bs_c_h);
+
+    // smaller cylinder
+    translate(qpp_add_vec(_tf_c, [bs_l-bs_c_off,0,0]))
+        cylinder(d1=bs_c_d, d2=0, h=bs_c_h);
+
+    // block
+    translate([bs_l/2-bs_b_l/2, 0, 0])
+        cube([bs_b_l,bs_b_t,bs_b_h]);
 }
 
 module floor(temperature="")

@@ -23,6 +23,10 @@ bs_c_h = 5;
 // '-> cones height
 bs_b_t = 1.5;
 // '-> block thickness
+bs_b_l = 6;
+// '-> block length
+bs_b_h = bs_c_h;
+// '-> block height
 
 // CURVE segment parameters
 // '-> TODO
