@@ -5,6 +5,8 @@ ss_l = 15;
 // '-> slope length
 ss_d = 3;
 // '-> slope hole diameter
+ss_off = 2;
+// '-> slope hole offset 
 
 // BRIDGE segment parameters
 bs_l = 30;
@@ -38,9 +40,9 @@ f_l = ss_l + bs_l + cs_l + ss_l;
 // BASE PLATE parameters
 bp_cr = 5;
 // '-> baseplate corner radius
-bp_l = 2*bp_r + f_l;
+bp_l = 2*bp_cr + f_l;
 // '-> baseplate length
-bp_w = 2*bp_r + f_w;
+bp_w = 2*bp_cr + f_w;
 // '-> baseplate width
 bp_t = 1;
 // '-> baseplate thickness
