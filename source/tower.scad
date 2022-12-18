@@ -1,5 +1,6 @@
 use<floor.scad>
 include <constants.scad>
+include <interface.scad>
 include <qpp-openscad-library/qpp_all.scad>
 
 // minimal temperature
@@ -14,8 +15,10 @@ n_layers = ceil((max_temp-min_temp)/step_temp);
 
 // baseplate
 qpp_cylindrocube([bp_l, bp_w, bp_t, bp_cr]);
-// TODO echo base value
-// TODO echo level value
+// echo base height value
+echo(str(IET," ", "bph", " ", bp_t));
+// echo level height value
+echo(str(IET," ", "flh", " ", f_h));
 
 for(i=[0:n_layers])
 {
