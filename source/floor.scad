@@ -77,7 +77,7 @@ module __bridge()
         cube([bs_b_l,bs_b_t,bs_b_h]);
 }
 
-module floor(temperature="230")
+module tower_floor(temperature="230")
 {
     _temp = str(temperature);
 
