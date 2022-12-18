@@ -35,7 +35,7 @@ This step will be implemented in `source/floor.scad` file.
 
 This step will be implemented in `source/tower.scad` file.
 
-- [ ] replicate floors to form a tower
-- [ ] add baseplate using [Q++ OpenSCAD library](https://github.com/kubikji2/qpp-openscad-library)
-- [ ] add text for temperatures and material
-- [ ] make it easily interfacable as in [url-qr-stl](https://github.com/kubikji2/url-qr-stl)
+- [x] replicate floors to form a tower
+- [x] add baseplate using [Q++ OpenSCAD library](https://github.com/kubikji2/qpp-openscad-library)
+- [x] add text for temperatures ~~and material~~
+- [x] make it easily interfacable as in [url-qr-stl](https://github.com/kubikji2/url-qr-stl)
