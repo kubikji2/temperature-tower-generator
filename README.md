@@ -39,3 +39,8 @@ This step will be implemented in `source/tower.scad` file.
 - [x] add baseplate using [Q++ OpenSCAD library](https://github.com/kubikji2/qpp-openscad-library)
 - [x] add text for temperatures ~~and material~~
 - [x] make it easily interfacable as in [url-qr-stl](https://github.com/kubikji2/url-qr-stl)
+
+### README.md
+
+- [ ] describe program arguments
+- [ ] tutorial on creating `*.ini` file export in PrusaSlicer
