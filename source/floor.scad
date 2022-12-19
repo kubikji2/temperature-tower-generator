@@ -2,8 +2,6 @@ include<constants.scad>
 include<qpp-openscad-library/qpp_constants.scad>
 include<qpp-openscad-library/qpp_utils.scad>
 
-$fn = 120;
-
 module __slope(ang=45, right=false)
 {
     // rotation angle

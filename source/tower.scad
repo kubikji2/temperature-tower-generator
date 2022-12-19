@@ -3,6 +3,8 @@ include <constants.scad>
 include <interface.scad>
 include <qpp-openscad-library/qpp_all.scad>
 
+$fn = 60;
+
 // minimal temperature
 min_temp = 200;
 // maximal temperature
