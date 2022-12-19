@@ -17,10 +17,6 @@ n_layers = ceil((max_temp-min_temp)/step_temp);
 
 // baseplate
 qpp_cylindrocube([bp_l, bp_w, bp_t, bp_cr]);
-// echo base height value
-echo(str(IET," ", "bph", " ", bp_t));
-// echo level height value
-echo(str(IET," ", "flh", " ", f_h));
 
 for(i=[0:n_layers])
 {
