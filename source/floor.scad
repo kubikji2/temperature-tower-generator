@@ -2,6 +2,7 @@ include<constants.scad>
 include<qpp-openscad-library/qpp_constants.scad>
 include<qpp-openscad-library/qpp_utils.scad>
 
+// customizable sloped segments
 module __slope(ang=45, right=false)
 {
     // rotation angle
@@ -38,6 +39,7 @@ module __slope(ang=45, right=false)
     }
 }
 
+// customizable curvature segments
 module __curves(temp)
 {
     difference()
@@ -45,7 +47,7 @@ module __curves(temp)
         // main block
         cube([cs_l, f_w, f_h]);
         
-        // TODO curves
+        // TODO curvature segment
 
         // temperature
         rotate([90,0,0])
@@ -55,6 +57,7 @@ module __curves(temp)
     }
 }
 
+// bridge segment
 module __bridge()
 {
     // bridge
@@ -75,25 +78,31 @@ module __bridge()
         cube([bs_b_l,bs_b_t,bs_b_h]);
 }
 
-module tower_floor(temperature="230")
+// tower floor as a collection of segments
+module tower_floor(temperature="230", left_slope=35, right_slope=45)
 {
-    _temp = str(temperature);
+    // temperature string
+    _temp_s = str(temperature);
 
+    // left slope segment
     _tf_1 = [bp_cr, bp_cr, 0];
     translate(_tf_1)
-        __slope(ang=35, right=false);
+        __slope(ang=left_slope, right=false);
     
+    // curvaturse segment including temperature
     _tf_2 = qpp_add_vec(_tf_1,[ss_l,0,0]);
     translate(_tf_2)
-        __curves(temp=_temp);
+        __curves(temp=_temp_s);
     
+    // bridging segment
     _tf_3 = qpp_add_vec(_tf_2,[cs_l,0,0]);
     translate(_tf_3)
         __bridge();
     
+    // right slope segment
     _tf_4 = qpp_add_vec(_tf_3,[bs_l,0,0]);
     translate(_tf_4)
-        __slope(ang=45, right=true);
+        __slope(ang=right_slope, right=true);
 
 }
 
