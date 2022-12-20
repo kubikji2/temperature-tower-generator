@@ -79,7 +79,7 @@ module __bridge()
 }
 
 // tower floor as a collection of segments
-module tower_floor(temperature="230", left_slope=35, right_slope=45)
+module tower_floor(temperature="230", slope_left=35, slope_right=45)
 {
     // temperature string
     _temp_s = str(temperature);
@@ -87,7 +87,7 @@ module tower_floor(temperature="230", left_slope=35, right_slope=45)
     // left slope segment
     _tf_1 = [bp_cr, bp_cr, 0];
     translate(_tf_1)
-        __slope(ang=left_slope, right=false);
+        __slope(ang=slope_left, right=false);
     
     // curvaturse segment including temperature
     _tf_2 = qpp_add_vec(_tf_1,[ss_l,0,0]);
@@ -102,7 +102,7 @@ module tower_floor(temperature="230", left_slope=35, right_slope=45)
     // right slope segment
     _tf_4 = qpp_add_vec(_tf_3,[bs_l,0,0]);
     translate(_tf_4)
-        __slope(ang=right_slope, right=true);
+        __slope(ang=slope_right, right=true);
 
 }
 
