@@ -4,26 +4,31 @@ import argparse
 
 # TODO: add constants/templates for the filenames
 
+def get_value_at_line(l):
+    return l[0].strip().split(" = ")[-1]
+
+def extract_data_from_ini(fn_config):
+
+    with open(fn_config, 'r') as f:
+        bundle_lines = f.readlines()
+        layer_height = float(get_value_at_line([line for line in bundle_lines if "layer_height" in line and not "_layer" in line and not "{" in line]))
+        first_layer_height = float(get_value_at_line([line for line in bundle_lines if "first_layer_height" in line]))
+        filament_name = get_value_at_line([line for line in bundle_lines if "filament_settings_id" in line])
+    
+    return first_layer_height, layer_height, filament_name
+
 def produce_stl(min_temp, max_temp, step_temp, fn="temp-tower-test.stl"):
     cmd_template = "openscad -o {} source/tower.scad -D min_temp={} -D max_temp={} -D step_temp={}"
     cmd = cmd_template.format(fn, min_temp, max_temp, step_temp)
     os.system(cmd)
 
-def produce_gcode(fn_in="temp-tower-test.stl", fn_out="temp-tower-test.gcode", fn_bundle="test-config.ini"):
+def produce_gcode(fn_in="temp-tower-test.stl", fn_out="temp-tower-test.gcode", fn_config="test-config.ini"):
     cmd_template = "prusaslicer -g {} --load {} -o {}"
-    cmd = cmd_template.format(fn_in, fn_bundle, fn_out)
+    cmd = cmd_template.format(fn_in, fn_config, fn_out)
     os.system(cmd)
 
-def processs_gcode(temperatures, fn_in="temp-tower-test.gcode", fn_out="final.gcode", fn_bundle="test-config.ini"):
-    layer_height = 0
-    first_layer_height = 0
-
-    # get layer and first layer height
-    with open(fn_bundle, 'r') as f:
-        bundle_lines = f.readlines()
-        layer_height = float([line for line in bundle_lines if "layer_height" in line and not "_layer" in line and not "{" in line][0].strip().split(" ")[-1])
-        first_layer_height = float([line for line in bundle_lines if "first_layer_height" in line][0].strip().split(" ")[-1])
-
+def processs_gcode(first_layer_height, layer_height, temperatures, fn_in="temp-tower-test.gcode", fn_out="final.gcode"):
+    
     # TODO: make this constant/autoloadable
     base_height = 1
     floor_height = 10
@@ -87,24 +92,30 @@ if __name__ == "__main__":
     
     # adding optional arguments
     parser.add_argument('-step', '--step_temp', help="temperature step between consequentive floors", default=5)
-    
+    parser.add_argument('-fn', '--filename', help="final gcode filename", default=None)
 
+    # try parsing arguments
     try:
         args = parser.parse_args()
     except SystemExit as err:
+        # if failed on non-required argument, suggest using help
         if err.code == 2:
             print("'-> For more info see: {} -h.".format(__file__),file=sys.stderr)
         sys.exit(-1)
     
+    # extract arguments
     _min_temp = args.min_temp
     _max_temp = args.max_temp
     _step_temp = args.step_temp
     _ini_path = args.ini_profile
 
-    # TODO: configurate filename using 'filament_settings_id' from config.ini and temperatures 
+    # extracting data from the ini file
+    flh, lh, fil_name = extract_data_from_ini(_ini_path)
+    fil_name = fil_name.replace(" ", "-").replace("\"", "")
+
+    _final_fn = args.filename if args.filename is not None else "temperature_tower_{}-{}_{}.gcode".format(_min_temp, _max_temp, fil_name)
     
-    # TODO: Add progress prints
     produce_stl(_min_temp,_max_temp,_step_temp)
     produce_gcode()
     temperatures = [i for i in range(_min_temp,_max_temp+1,_step_temp)]
-    processs_gcode(temperatures=temperatures)
+    processs_gcode(fn_out=_final_fn, temperatures=temperatures, first_layer_height=flh, layer_height=lh)
