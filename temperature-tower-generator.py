@@ -1,4 +1,6 @@
-import os
+import os, sys
+
+import argparse
 
 # TODO: add constants/templates for the filenames
 
@@ -51,7 +53,6 @@ def processs_gcode(temperatures, fn_in="temp-tower-test.gcode", fn_out="final.gc
             if abs(fl-l) < diff:
                 diff = abs(fl-l)
                 idx = l_idx
-                print(diff, idx)
         # temperature is changed on the next layer
         temp_change_at.append(idx+1)
     
@@ -71,11 +72,37 @@ def processs_gcode(temperatures, fn_in="temp-tower-test.gcode", fn_out="final.gc
         f.write(gcode_lines)
 
 if __name__ == "__main__":
-    # TODO: ARG-parse
-    _min_temp = 210
-    _max_temp = 220
-    _step_temp = 2
+
+    parser = argparse.ArgumentParser(
+            prog = '{}'.format(__file__),
+            description = 'Creates gcode for temperature tower to select an optimal printing temperature. The temperature range (-min and -max) and -ini file are required.',
+            epilog = 'See https://github.com/kubikji2 for more silly projects.')
+
+    # adding required arguments
+    parser.add_argument('-min', '--min_temp', help="minimal temperature", required=True,
+                            default=210, type=int)
+    parser.add_argument('-max', '--max_temp', help="maximal temperature", required=True,
+                            default=230, type=int)
+    parser.add_argument('-ini', '--ini_profile', help="path to ini file, see README.md on how to create it", required=True)
+    
+    # adding optional arguments
+    parser.add_argument('-step', '--step_temp', help="temperature step between consequentive floors", default=5)
+    
+
+    try:
+        args = parser.parse_args()
+    except SystemExit as err:
+        if err.code == 2:
+            print("'-> For more info see: {} -h.".format(__file__),file=sys.stderr)
+        sys.exit(-1)
+    
+    _min_temp = args.min_temp
+    _max_temp = args.max_temp
+    _step_temp = args.step_temp
+    _ini_path = args.ini_profile
+
     # TODO: configurate filename using 'filament_settings_id' from config.ini and temperatures 
+    
     # TODO: Add progress prints
     produce_stl(_min_temp,_max_temp,_step_temp)
     produce_gcode()
