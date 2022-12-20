@@ -4,9 +4,12 @@ import argparse
 
 # TODO: add constants/templates for the filenames
 
+# extract value from the lines
 def get_value_at_line(l):
     return l[0].strip().split(" = ")[-1]
 
+
+# extract data from the provided ini file
 def extract_data_from_ini(fn_config):
 
     with open(fn_config, 'r') as f:
@@ -17,18 +20,35 @@ def extract_data_from_ini(fn_config):
     
     return first_layer_height, layer_height, filament_name
 
+
+# create stl using OpenSCAD
 def produce_stl(min_temp, max_temp, step_temp, fn="temp-tower-test.stl"):
+    
+    print("[DEBUG] producing stl. It might take a few minutes.")
+    
     cmd_template = "openscad -o {} source/tower.scad -D min_temp={} -D max_temp={} -D step_temp={}"
     cmd = cmd_template.format(fn, min_temp, max_temp, step_temp)
     os.system(cmd)
 
+    print("[DEBUG] stl finished.")
+
+
+# slice stl using PrusaSlicer
 def produce_gcode(fn_in="temp-tower-test.stl", fn_out="temp-tower-test.gcode", fn_config="test-config.ini"):
+
+    print("[DEBUG] slicing.")
+
     cmd_template = "prusaslicer -g {} --load {} -o {}"
     cmd = cmd_template.format(fn_in, fn_config, fn_out)
     os.system(cmd)
 
+    print("[DEBUG] slicing finished.")
+
+# process gcode, aka add temperature changes
 def processs_gcode(first_layer_height, layer_height, temperatures, fn_in="temp-tower-test.gcode", fn_out="final.gcode"):
     
+    print("[DEBUG] starting gcode modification.")
+
     # TODO: make this constant/autoloadable
     base_height = 1
     floor_height = 10
@@ -76,6 +96,9 @@ def processs_gcode(first_layer_height, layer_height, temperatures, fn_in="temp-t
     with open(fn_out,'w') as f:
         f.write(gcode_lines)
 
+    print("[DEBUG] final gcode done.")
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
@@ -115,6 +138,8 @@ if __name__ == "__main__":
 
     _final_fn = args.filename if args.filename is not None else "temperature_tower_{}-{}_{}.gcode".format(_min_temp, _max_temp, fil_name)
     
+    print("[DEBUG] argument processing done.")
+
     produce_stl(_min_temp,_max_temp,_step_temp)
     produce_gcode()
     temperatures = [i for i in range(_min_temp,_max_temp+1,_step_temp)]
