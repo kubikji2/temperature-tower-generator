@@ -2,7 +2,8 @@ import os, sys
 
 import argparse
 
-# TODO: add constants/templates for the filenames
+STL_FILENAME = "temp-tower-test.stl"
+GCODE_FILENAME = "temp-tower-test.gcode"
 
 # extract value from the lines
 def get_value_at_line(l):
@@ -22,19 +23,19 @@ def extract_data_from_ini(fn_config):
 
 
 # create stl using OpenSCAD
-def produce_stl(min_temp, max_temp, step_temp, fn="temp-tower-test.stl"):
+def produce_stl(min_temp, max_temp, step_temp, stl_fn=STL_FILENAME):
     
     print("[DEBUG] producing stl. It might take a few minutes.")
     
     cmd_template = "openscad -o {} source/tower.scad -D min_temp={} -D max_temp={} -D step_temp={}"
-    cmd = cmd_template.format(fn, min_temp, max_temp, step_temp)
+    cmd = cmd_template.format(stl_fn, min_temp, max_temp, step_temp)
     os.system(cmd)
 
     print("[DEBUG] stl finished.")
 
 
 # slice stl using PrusaSlicer
-def produce_gcode(fn_in="temp-tower-test.stl", fn_out="temp-tower-test.gcode", fn_config="test-config.ini"):
+def produce_gcode(fn_config, fn_in=STL_FILENAME, fn_out=GCODE_FILENAME):
 
     print("[DEBUG] slicing.")
 
@@ -45,7 +46,7 @@ def produce_gcode(fn_in="temp-tower-test.stl", fn_out="temp-tower-test.gcode", f
     print("[DEBUG] slicing finished.")
 
 # process gcode, aka add temperature changes
-def processs_gcode(first_layer_height, layer_height, temperatures, fn_in="temp-tower-test.gcode", fn_out="final.gcode"):
+def processs_gcode(first_layer_height, layer_height, temperatures, fn_final, fn_in=GCODE_FILENAME):
     
     print("[DEBUG] starting gcode modification.")
 
@@ -93,7 +94,7 @@ def processs_gcode(first_layer_height, layer_height, temperatures, fn_in="temp-t
         gcode_lines = gcode_lines.replace(search_string,new_string)
     
     # updating the gcode
-    with open(fn_out,'w') as f:
+    with open(fn_final,'w') as f:
         f.write(gcode_lines)
 
     print("[DEBUG] final gcode done.")
@@ -140,7 +141,13 @@ if __name__ == "__main__":
     
     print("[DEBUG] argument processing done.")
 
+    # create stl
     produce_stl(_min_temp,_max_temp,_step_temp)
-    produce_gcode()
+    
+    # create gcode
+    produce_gcode(fn_config=_ini_path)
+    
+    # process gcode
     temperatures = [i for i in range(_min_temp,_max_temp+1,_step_temp)]
-    processs_gcode(fn_out=_final_fn, temperatures=temperatures, first_layer_height=flh, layer_height=lh)
+    processs_gcode(temperatures=temperatures, first_layer_height=flh, layer_height=lh, fn_final=_final_fn)
+
