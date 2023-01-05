@@ -44,3 +44,7 @@ This step will be implemented in `source/tower.scad` file.
 
 - [ ] describe program arguments
 - [ ] tutorial on creating `*.ini` file export in PrusaSlicer
+
+## NOTES
+
+- [Slic3r command line usage](https://manual.slic3r.org/advanced/command-line)
