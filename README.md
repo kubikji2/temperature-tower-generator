@@ -29,7 +29,7 @@ This step will be implemented in `source/floor.scad` file.
 - [x] model basic slopes at two different angles with holes
 - [x] add bridging segment
 - [x] add stringing segment (two cones)
-- [ ] add curvature segment 
+- [x] add curvature segment 
 
 ### Openscad - Tower model
 
@@ -48,3 +48,8 @@ This step will be implemented in `source/tower.scad` file.
 ## NOTES
 
 - [Slic3r command line usage](https://manual.slic3r.org/advanced/command-line)
+
+## KNOWN ISSUES
+
+- ISSUE: Printers with multiple extruders cause weird naming
+  - SOLUTION: TODO use argument `--filament-name` to fix that
