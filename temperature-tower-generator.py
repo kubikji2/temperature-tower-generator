@@ -15,20 +15,21 @@ def extract_data_from_ini(fn_config):
 
     with open(fn_config, 'r') as f:
         bundle_lines = f.readlines()
-        layer_height = float(get_value_at_line([line for line in bundle_lines if "layer_height" in line and not "_layer" in line and not "{" in line]))
-        first_layer_height = float(get_value_at_line([line for line in bundle_lines if "first_layer_height" in line]))
-        filament_name = get_value_at_line([line for line in bundle_lines if "filament_settings_id" in line])
+        layer_height = float(get_value_at_line([line for line in bundle_lines if line.startswith("layer_height")]))
+        first_layer_height = float(get_value_at_line([line for line in bundle_lines if line.startswith("first_layer_height")]))
+        filament_name = get_value_at_line([line for line in bundle_lines if line.startswith("filament_settings_id")])
+        printer_name = get_value_at_line([line for line in bundle_lines if line.startswith("printer_model")])
     
-    return first_layer_height, layer_height, filament_name
+    return first_layer_height, layer_height, filament_name, printer_name
 
 
 # create stl using OpenSCAD
-def produce_stl(min_temp, max_temp, step_temp, stl_fn=STL_FILENAME):
+def produce_stl(min_temp, max_temp, step_temp, filament_name, printer_name, stl_fn=STL_FILENAME):
     
     print("[DEBUG] producing stl. It might take a few minutes.")
     
-    cmd_template = "openscad -o {} source/tower.scad -D min_temp={} -D max_temp={} -D step_temp={}"
-    cmd = cmd_template.format(stl_fn, min_temp, max_temp, step_temp)
+    cmd_template = "openscad -o {} source/tower.scad -D min_temp={} -D max_temp={} -D step_temp={} -D material={} -D printer={}"
+    cmd = cmd_template.format(stl_fn, min_temp, max_temp, step_temp, filament_name, printer_name)
     os.system(cmd)
 
     print("[DEBUG] stl finished.")
@@ -81,7 +82,7 @@ def processs_gcode(first_layer_height, layer_height, temperatures, fn_final, fn_
                 idx = l_idx
         # temperature is changed on the next layer
         temp_change_at.append(idx+1)
-    
+        
     # injecting temperature change
     search_template = ";LAYER_CHANGE\n;Z:{:.3f}"
     for i in range(n_floors):
@@ -134,15 +135,19 @@ if __name__ == "__main__":
     _ini_path = args.ini_profile
 
     # extracting data from the ini file
-    flh, lh, fil_name = extract_data_from_ini(_ini_path)
-    fil_name = fil_name.replace(" ", "-").replace("\"", "")
+    flh, lh, fil_name, printer_name = extract_data_from_ini(_ini_path)
+    fil_name = fil_name.replace(" ", "-").replace("\"", "").replace("(","_").replace(")","_")
 
     _final_fn = args.filename if args.filename is not None else "temperature_tower_{}-{}_{}.gcode".format(_min_temp, _max_temp, fil_name)
     
+    # filament type and printer name including the quotation marks
+    _filament_name = "\\\"{}\\\"".format(fil_name)
+    _printer_name = "\\\"{}\\\"".format(printer_name)
+
     print("[DEBUG] argument processing done.")
 
     # create stl
-    produce_stl(_min_temp,_max_temp,_step_temp)
+    produce_stl(_min_temp,_max_temp,_step_temp,_filament_name,_printer_name)
     
     # create gcode
     produce_gcode(fn_config=_ini_path)
