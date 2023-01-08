@@ -1,6 +1,7 @@
 include<constants.scad>
 include<qpp-openscad-library/qpp_constants.scad>
 include<qpp-openscad-library/qpp_utils.scad>
+include<qpp-openscad-library/qpp_basic_geometries.scad>
 
 // customizable sloped segments
 module __slope(ang=45, right=false)
@@ -42,19 +43,47 @@ module __slope(ang=45, right=false)
 // customizable curvature segments
 module __curves(temp)
 {
+    // hole dimensions
+    _h_x = cs_l - 2*bs_b_t;
+    _h_y = f_w-2*bs_b_t;
+    _h_z = f_h - 2*bs_b_t;
+
     difference()
     {
         // main block
         cube([cs_l, f_w, f_h]);
         
-        // TODO curvature segment
+        // carving hole
+        translate([(cs_l-_h_x)/2, f_w-_h_y, (f_h-_h_z)/2])
+        {
+            // carving cube
+            cube([_h_x-_h_z+qpp_eps, _h_y+qpp_eps, _h_z]);
 
+            // carving arch
+            translate([_h_x-_h_z,qpp_eps,0])
+                rotate([-90,0,0])
+                    qpp_cylinder_sector(h=_h_y,r=_h_z+qpp_eps,sector=[270,360]);
+
+        }
+        
         // temperature
         rotate([90,0,0])
             translate([cs_l/2,f_h/2, -t_d+qpp_eps])
                 linear_extrude(t_d)
                     text(text=str(temp), size=6, halign="center", valign="center");
+        
+        // hole in the wall
+        translate([cs_l-_h_x+qpp_eps,f_w/2,f_h/2])
+            rotate([0,90,0])
+                cylinder(d=ss_d, h=_h_x);
+
     }
+
+    // right curvature
+    translate([(cs_l-_h_x)/2,f_w-_h_y,f_h/2+_h_z/4])
+        rotate([-90,0,0])
+            qpp_cylinder_sector(h=_h_y,d=_h_z,sector=[0,90]);
+    
 }
 
 // bridge segment
