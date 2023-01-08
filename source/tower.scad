@@ -35,10 +35,10 @@ module baseplate(material="???", printer="???")
         linear_extrude(0.2)
         {
             // material label
-            text(text=material, size=_tw, halign="left", valign="center");
+            text(text=material, size=0.5*_tw, halign="left", valign="bottom");
             // printer label
             translate([_tl,0,0])
-                text(text=printer, size=0.5*_tw, halign="right", valign="center");
+                text(text=printer, size=0.5*_tw, halign="right", valign="top");
         }
     }
 }
