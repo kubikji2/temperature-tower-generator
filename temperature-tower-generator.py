@@ -100,6 +100,9 @@ def processs_gcode(first_layer_height, layer_height, temperatures, fn_final, fn_
 
     print("[DEBUG] final gcode done.")
 
+#DEFFAULT_MIN_TEMP = 210
+#DEFFAULT_MAX_TEMP = 230
+DEFFAULT_TEMP_STEP = 5
 
 if __name__ == "__main__":
 
@@ -109,15 +112,13 @@ if __name__ == "__main__":
             epilog = 'See https://github.com/kubikji2 for more silly projects.')
 
     # adding required arguments
-    parser.add_argument('-min', '--min_temp', help="minimal temperature", required=True,
-                            default=210, type=int)
-    parser.add_argument('-max', '--max_temp', help="maximal temperature", required=True,
-                            default=230, type=int)
+    parser.add_argument('-min', '--min_temp', help="minimal temperature", required=True, type=int)
+    parser.add_argument('-max', '--max_temp', help="maximal temperature", required=True, type=int)
     parser.add_argument('-ini', '--ini_profile', help="path to ini file, see README.md on how to create it", required=True)
     
     # adding optional arguments
-    parser.add_argument('-step', '--step_temp', help="temperature step between consequentive floors",
-                            default=5, type=int)
+    parser.add_argument('-step', '--step_temp', help="temperature step between consequentive floors  ({} default)".format(DEFFAULT_TEMP_STEP),
+                            default=DEFFAULT_TEMP_STEP, type=int)
     parser.add_argument('-fn', '--filename', help="final gcode filename", default=None)
 
     # try parsing arguments
