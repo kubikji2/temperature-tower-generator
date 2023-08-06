@@ -1,6 +1,8 @@
 use<floor.scad>
 include <constants.scad>
-include <qpp-openscad-library/qpp_all.scad>
+
+include <solidpp/cubepp.scad>
+include <solidpp/modifiers/modifiers.scad>
 
 $fn = 60;
 
@@ -26,12 +28,14 @@ module baseplate(material="???", printer="???")
     difference()
     {
         // baseplate
-        qpp_cylindrocube([bp_l, bp_w, bp_t, bp_cr]);
+        size = [bp_l, bp_w, bp_t];
+        mod_list = [round_edges(r=bp_cr)];
+        cubepp(size, mod_list=mod_list);
 
         _tw = bp_w-2*bp_cr;
         _tl = bp_l-2*bp_cr;
         mirror([0,1,0])
-        translate([bp_cr,-bp_w/2,-qpp_eps])
+        translate([bp_cr,-bp_w/2,-eps])
         linear_extrude(0.2)
         {
             // material label

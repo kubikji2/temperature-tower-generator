@@ -54,3 +54,6 @@ bp_t = 1;
 // TEXT perameters
 t_d = 0.5;
 // '-> text depth
+
+// eps
+eps = 0.01;

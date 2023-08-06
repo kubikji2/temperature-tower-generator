@@ -1,7 +1,8 @@
 include<constants.scad>
-include<qpp-openscad-library/qpp_constants.scad>
-include<qpp-openscad-library/qpp_utils.scad>
-include<qpp-openscad-library/qpp_basic_geometries.scad>
+
+include<solidpp/utils/solidpp_utils.scad>
+include<solidpp/transforms/cut.scad>
+include<solidpp/debug/coordinate_frame.scad>
 
 // customizable sloped segments
 module __slope(ang=45, right=false)
@@ -24,21 +25,28 @@ module __slope(ang=45, right=false)
         // slope
         translate([-_c_x_off,0,f_h])
             rotate([0,_ang,0])
-                translate([_c_x_off,-qpp_eps,-f_h])
-                    cube([_l, f_w+2*qpp_eps, f_h]);
+                translate([_c_x_off,-eps,-f_h])
+                    cube([_l, f_w+2*eps, f_h]);
         
         // hole
         translate([_h_x_off,f_w/2,0])
-            cylinder(d=ss_d, h=f_h+qpp_eps);
+            cylinder(d=ss_d, h=f_h+eps);
 
         
         // degrees
         rotate([90,0,0])
-            translate([_t_x_off,f_h-bs_b_t, -t_d+qpp_eps])
+            translate([_t_x_off,f_h-bs_b_t, -t_d+eps])
                 linear_extrude(t_d)
                     text(text=str(ang, "°"), size=3, halign= right ? "left" : "right", valign="top");
     }
 }
+
+module __cylinder_sector(h=undef,r=undef,d=undef,sector=[0,90])
+{
+    cut(sector = [sector[1], sector[0]+360])
+        cylinder(h=h,r=r,d=d);
+}
+
 
 // customizable curvature segments
 module __curves(temp)
@@ -57,23 +65,23 @@ module __curves(temp)
         translate([(cs_l-_h_x)/2, f_w-_h_y, (f_h-_h_z)/2])
         {
             // carving cube
-            cube([_h_x-_h_z+qpp_eps, _h_y+qpp_eps, _h_z]);
+            cube([_h_x-_h_z+eps, _h_y+eps, _h_z]);
 
             // carving arch
-            translate([_h_x-_h_z,qpp_eps,0])
+            translate([_h_x-_h_z,eps,0])
                 rotate([-90,0,0])
-                    qpp_cylinder_sector(h=_h_y,r=_h_z+qpp_eps,sector=[270,360]);
+                    __cylinder_sector(h=_h_y,r=_h_z+eps,sector=[270,360]);
 
         }
         
         // temperature
         rotate([90,0,0])
-            translate([cs_l/2,f_h/2, -t_d+qpp_eps])
+            translate([cs_l/2,f_h/2, -t_d+eps])
                 linear_extrude(t_d)
                     text(text=str(temp), size=6, halign="center", valign="center");
         
         // hole in the wall
-        translate([cs_l-_h_x+qpp_eps,f_w/2,f_h/2])
+        translate([cs_l-_h_x+eps,f_w/2,f_h/2])
             rotate([0,90,0])
                 cylinder(d=ss_d, h=_h_x);
 
@@ -82,7 +90,7 @@ module __curves(temp)
     // right curvature
     translate([(cs_l-_h_x)/2,f_w-_h_y,f_h/2+_h_z/4])
         rotate([-90,0,0])
-            qpp_cylinder_sector(h=_h_y,d=_h_z,sector=[0,90]);
+            __cylinder_sector(h=_h_y,d=_h_z,sector=[0,90]);
     
 }
 
@@ -95,11 +103,11 @@ module __bridge()
     
     // bigger cylinder
     _tf_c = [0, f_w/2, 0];
-    translate(qpp_add_vec(_tf_c, [bs_c_off,0,0]))
+    translate(add_vecs(_tf_c, [bs_c_off,0,0]))
         cylinder(d1=bs_c_D, d2=0, h=bs_c_h);
 
     // smaller cylinder
-    translate(qpp_add_vec(_tf_c, [bs_l-bs_c_off,0,0]))
+    translate(add_vecs(_tf_c, [bs_l-bs_c_off,0,0]))
         cylinder(d1=bs_c_d, d2=0, h=bs_c_h);
 
     // block
@@ -119,17 +127,17 @@ module tower_floor(temperature="230", slope_left=35, slope_right=45)
         __slope(ang=slope_left, right=false);
     
     // curvaturse segment including temperature
-    _tf_2 = qpp_add_vec(_tf_1,[ss_l,0,0]);
+    _tf_2 = add_vecs(_tf_1,[ss_l,0,0]);
     translate(_tf_2)
         __curves(temp=_temp_s);
     
     // bridging segment
-    _tf_3 = qpp_add_vec(_tf_2,[cs_l,0,0]);
+    _tf_3 = add_vecs(_tf_2,[cs_l,0,0]);
     translate(_tf_3)
         __bridge();
     
     // right slope segment
-    _tf_4 = qpp_add_vec(_tf_3,[bs_l,0,0]);
+    _tf_4 = add_vecs(_tf_3,[bs_l,0,0]);
     translate(_tf_4)
         __slope(ang=slope_right, right=true);
 
