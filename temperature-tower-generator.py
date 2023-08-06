@@ -117,9 +117,10 @@ if __name__ == "__main__":
     parser.add_argument('-ini', '--ini_profile', help="path to ini file, see README.md on how to create it", required=True)
     
     # adding optional arguments
-    parser.add_argument('-step', '--step_temp', help="temperature step between consequentive floors  ({} default)".format(DEFFAULT_TEMP_STEP),
+    parser.add_argument('-step', '--step_temp', help="temperature step between consequentive floors  (optional, {} default)".format(DEFFAULT_TEMP_STEP),
                             default=DEFFAULT_TEMP_STEP, type=int)
-    parser.add_argument('-fn', '--filename', help="final gcode filename", default=None)
+    parser.add_argument('-fn', '--filename', help="final gcode filename (optional)", default=None, type=str)
+    parser.add_argument('-flm', '--filament_name', help="filament name (optional)", default=None, type=str)
 
     # try parsing arguments
     try:
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     _max_temp = args.max_temp
     _step_temp = args.step_temp
     _ini_path = args.ini_profile
+    _filament_name = args.filament_name
 
     # extracting data from the ini file
     flh, lh, file_name, printer_name = extract_data_from_ini(_ini_path)
@@ -143,7 +145,7 @@ if __name__ == "__main__":
     _final_fn = args.filename if args.filename is not None else "temperature_tower_{}-{}_{}.gcode".format(_min_temp, _max_temp, file_name)
     
     # filament type and printer name including the quotation marks
-    _filament_name = "\\\"{}\\\"".format(file_name)
+    _filament_name = "\\\"{}\\\"".format(file_name if _filament_name is None else _filament_name)
     _printer_name = "\\\"{}\\\"".format(printer_name)
 
     print("[DEBUG] argument processing done.")
