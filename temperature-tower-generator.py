@@ -30,6 +30,7 @@ def produce_stl(min_temp, max_temp, step_temp, filament_name, printer_name, stl_
     
     cmd_template = "openscad -o {} source/tower.scad -D min_temp={} -D max_temp={} -D step_temp={} -D material={} -D printer={}"
     cmd = cmd_template.format(stl_fn, min_temp, max_temp, step_temp, filament_name, printer_name)
+    #print(cmd)  
     os.system(cmd)
 
     print("[DEBUG] stl finished.")
@@ -139,8 +140,8 @@ if __name__ == "__main__":
     _filament_name = args.filament_name
 
     # extracting data from the ini file
-    flh, lh, file_name, printer_name = extract_data_from_ini(_ini_path)
-    file_name = file_name.replace(" ", "-").replace("\"", "").replace("(","_").replace(")","_")
+    flh, lh, filament_name, printer_name = extract_data_from_ini(_ini_path)
+    file_name = filament_name.split(";")[0].replace(" ", "-").replace("\"", "").replace("(","_").replace(")","_")
 
     _final_fn = args.filename if args.filename is not None else "temperature_tower_{}-{}_{}.gcode".format(_min_temp, _max_temp, file_name)
     
